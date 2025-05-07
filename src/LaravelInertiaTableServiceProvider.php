@@ -16,7 +16,6 @@ final class LaravelInertiaTableServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasAssets()
-            ->hasRoute('web')
             ->hasMigration('create_table_state_table')
             ->hasCommand(Commands\PublishCommand::class);
     }

@@ -14,7 +14,6 @@ it('can create a button action', function () {
 
 it('can set url for button action', function () {
     $action = ButtonAction::make('edit')->url('/users/:id/edit');
-
     expect($action->toArray()['url'])->toBe('/users/:id/edit');
 });
 
