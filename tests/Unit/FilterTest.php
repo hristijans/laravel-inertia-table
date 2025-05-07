@@ -6,31 +6,31 @@ declare(strict_types=1);
 use Hristijans\LaravelInertiaTable\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 
-it('can create a select filter', function () {
-    $filter = SelectFilter::make('status');
+it('can create a select filter', function (): void {
+    $selectFilter = SelectFilter::make('status');
 
-    expect($filter)->toBeFilter(SelectFilter::class);
-    expect($filter->toArray()['name'])->toBe('status');
-    expect($filter->toArray()['type'])->toBe('select');
+    expect($selectFilter)->toBeFilter(SelectFilter::class);
+    expect($selectFilter->toArray()['name'])->toBe('status');
+    expect($selectFilter->toArray()['type'])->toBe('select');
 });
 
-it('can set options for select filter', function () {
+it('can set options for select filter', function (): void {
     $options = [
         'active' => 'Active',
         'inactive' => 'Inactive',
     ];
 
-    $filter = SelectFilter::make('status')->options($options);
+    $selectFilter = SelectFilter::make('status')->options($options);
 
-    expect($filter->toArray()['options'])->toBe($options);
+    expect($selectFilter->toArray()['options'])->toBe($options);
 });
 
-it('can apply filter to query', function () {
+it('can apply filter to query', function (): void {
     $query = $this->mock(Builder::class);
     $query->expects('where')->with('status', 'active')->andReturnSelf();
 
-    $filter = SelectFilter::make('status');
-    $result = $filter->apply($query, 'active');
+    $selectFilter = SelectFilter::make('status');
+    $builder = $selectFilter->apply($query, 'active');
 
-    expect($result)->toBe($query);
+    expect($builder)->toBe($query);
 });
