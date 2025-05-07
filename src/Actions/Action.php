@@ -9,8 +9,6 @@ use Illuminate\Support\Str;
 
 abstract class Action
 {
-    protected string $name;
-
     protected ?string $label = null;
 
     protected ?string $icon = null;
@@ -24,10 +22,9 @@ abstract class Action
     /**
      * Create a new action instance.
      */
-    public function __construct(string $name)
+    public function __construct(protected string $name)
     {
-        $this->name = $name;
-        $this->label = Str::headline($name);
+        $this->label = Str::headline($this->name);
     }
 
     /**

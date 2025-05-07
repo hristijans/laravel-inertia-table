@@ -10,8 +10,6 @@ use Illuminate\Support\Str;
 
 abstract class Filter
 {
-    protected string $name;
-
     protected ?string $label = null;
 
     protected $default = null;
@@ -21,10 +19,9 @@ abstract class Filter
     /**
      * Create a new column instance.
      */
-    public function __construct(string $name)
+    public function __construct(protected string $name)
     {
-        $this->name = $name;
-        $this->label = Str::headline($name);
+        $this->label = Str::headline($this->name);
     }
 
     /**

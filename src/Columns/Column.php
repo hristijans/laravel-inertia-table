@@ -8,8 +8,6 @@ use Illuminate\Support\Str;
 
 abstract class Column
 {
-    protected string $name;
-
     protected ?string $label = null;
 
     protected bool $sortable = false;
@@ -19,10 +17,9 @@ abstract class Column
     /**
      * Create a new column instance.
      */
-    public function __construct(string $name)
+    public function __construct(protected string $name)
     {
-        $this->name = $name;
-        $this->label = Str::headline($name);
+        $this->label = Str::headline($this->name);
     }
 
     /**
