@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 // tests/Unit/FilterTest.php
 
 use Hristijans\LaravelInertiaTable\Filters\SelectFilter;

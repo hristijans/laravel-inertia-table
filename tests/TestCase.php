@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hristijans\LaravelInertiaTable\Tests;
 
 use Hristijans\LaravelInertiaTable\LaravelInertiaTableServiceProvider;

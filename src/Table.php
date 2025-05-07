@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Hristijans\LaravelInertiaTable;
 
-use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Hristijans\LaravelInertiaTable\Columns\Column;
-use Hristijans\LaravelInertiaTable\Actions\Action;
-use Hristijans\LaravelInertiaTable\Filters\Filter;
 
 final class Table
 {
@@ -36,7 +32,7 @@ final class Table
 
     public static function make(string $name): self
     {
-        $instance = new static();
+        $instance = new self;
         $instance->name = $name;
 
         return $instance;

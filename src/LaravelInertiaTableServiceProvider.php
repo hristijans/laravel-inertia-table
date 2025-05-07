@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hristijans\LaravelInertiaTable;
 
-use Illuminate\Support\ServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -25,7 +24,7 @@ final class LaravelInertiaTableServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         $this->app->singleton(Table::class, function () {
-            return new Table();
+            return new Table;
         });
     }
 }

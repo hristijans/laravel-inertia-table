@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
 
-use Hristijans\LaravelInertiaTable\Columns\TextColumn;
 use Hristijans\LaravelInertiaTable\Columns\BadgeColumn;
+use Hristijans\LaravelInertiaTable\Columns\TextColumn;
 
 it('can create a text column', function () {
     $column = TextColumn::make('name');

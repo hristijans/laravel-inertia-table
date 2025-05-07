@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hristijans\LaravelInertiaTable\Tests\Feature;
 
-use Hristijans\LaravelInertiaTable\Table;
-use Hristijans\LaravelInertiaTable\Columns\TextColumn;
 use Hristijans\LaravelInertiaTable\Actions\ButtonAction;
+use Hristijans\LaravelInertiaTable\Columns\TextColumn;
 use Hristijans\LaravelInertiaTable\Filters\SelectFilter;
+use Hristijans\LaravelInertiaTable\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
-use Inertia\Testing\AssertableInertia;
 
 class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
 {
@@ -32,8 +33,10 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         });
 
         // Create a test model
-        $testUser = new class extends Model {
+        $testUser = new class extends Model
+        {
             protected $table = 'test_users';
+
             protected $guarded = [];
         };
 
@@ -368,8 +371,10 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
      */
     private function getTestUserModel()
     {
-        return new class extends Model {
+        return new class extends Model
+        {
             protected $table = 'test_users';
+
             protected $guarded = [];
         };
     }
@@ -383,10 +388,11 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         $mock->shouldHaveReceived('share')
             ->with('table', $this->callback(function ($data) use ($expected) {
                 foreach ($expected as $key => $value) {
-                    if (!isset($data[$key]) || $data[$key] != $value) {
+                    if (! isset($data[$key]) || $data[$key] != $value) {
                         return false;
                     }
                 }
+
                 return true;
             }));
     }

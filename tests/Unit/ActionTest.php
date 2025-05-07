@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Hristijans\LaravelInertiaTable\Actions\ButtonAction;
 
 it('can create a button action', function () {

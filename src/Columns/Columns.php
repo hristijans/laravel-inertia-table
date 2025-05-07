@@ -18,7 +18,7 @@ abstract class Column
 
     public static function make(string $name): static
     {
-        $instance = new static();
+        $instance = new static;
         $instance->name = $name;
         $instance->label = Str::headline($name);
 
