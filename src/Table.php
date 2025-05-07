@@ -70,9 +70,9 @@ final class Table
         return $this;
     }
 
-    public function query(Builder $query): self
+    public function query(Builder $builder): self
     {
-        $this->query = $query;
+        $this->query = $builder;
 
         return $this;
     }
@@ -97,7 +97,7 @@ final class Table
 
         $state = $this->getState($request);
 
-        if ($this->query === null) {
+        if (! $this->query instanceof \Illuminate\Database\Eloquent\Builder) {
             throw new \RuntimeException('Query must be set before rendering the table.');
         }
 
@@ -105,7 +105,7 @@ final class Table
         $query = $this->applySortingToQuery($query, $state['sort'] ?? null);
         $query = $this->applySearchToQuery($query, $state['search'] ?? null);
 
-        $records = $query->paginate(
+        $lengthAwarePaginator = $query->paginate(
             $this->perPage,
             ['*'],
             $this->pageName,
@@ -117,7 +117,7 @@ final class Table
             'columns' => collect($this->columns)->map->toArray()->toArray(),
             'actions' => collect($this->actions)->map->toArray()->toArray(),
             'filters' => collect($this->filters)->map->toArray()->toArray(),
-            'records' => $records,
+            'records' => $lengthAwarePaginator,
             'sortable' => $this->sortableColumns,
             'searchable' => $this->searchableColumns,
             'preserveState' => $this->preserveState,
@@ -135,29 +135,27 @@ final class Table
         return $tableData;
     }
 
-    protected function applyFiltersToQuery(Builder $query, array $filters): Builder
+    protected function applyFiltersToQuery(Builder $builder, array $filters): Builder
     {
         foreach ($filters as $name => $value) {
             if (empty($value)) {
                 continue;
             }
 
-            $filter = collect($this->filters)->first(function ($filter) use ($name) {
-                return $filter->getName() === $name;
-            });
+            $filter = collect($this->filters)->first(fn ($filter): bool => $filter->getName() === $name);
 
             if ($filter) {
-                $query = $filter->apply($query, $value);
+                $builder = $filter->apply($builder, $value);
             }
         }
 
-        return $query;
+        return $builder;
     }
 
-    protected function applySortingToQuery(Builder $query, ?string $sort): Builder
+    protected function applySortingToQuery(Builder $builder, ?string $sort): Builder
     {
-        if (empty($sort)) {
-            return $query;
+        if ($sort === null || $sort === '' || $sort === '0') {
+            return $builder;
         }
 
         $direction = 'asc';
@@ -169,19 +167,19 @@ final class Table
         }
 
         if (in_array($column, $this->sortableColumns)) {
-            return $query->orderBy($column, $direction);
+            return $builder->orderBy($column, $direction);
         }
 
-        return $query;
+        return $builder;
     }
 
-    protected function applySearchToQuery(Builder $query, ?string $search): Builder
+    protected function applySearchToQuery(Builder $builder, ?string $search): Builder
     {
-        if (empty($search) || empty($this->searchableColumns)) {
-            return $query;
+        if ($search === null || $search === '' || $search === '0' || $this->searchableColumns === []) {
+            return $builder;
         }
 
-        return $query->where(function ($query) use ($search) {
+        return $builder->where(function ($query) use ($search): void {
             foreach ($this->searchableColumns as $index => $column) {
                 $method = $index === 0 ? 'where' : 'orWhere';
                 $query->{$method}($column, 'LIKE', "%{$search}%");
@@ -205,7 +203,7 @@ final class Table
             }
 
             return $state;
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             // If session is not available, just return the request parameters
             return $request->all();
         }

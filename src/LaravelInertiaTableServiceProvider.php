@@ -22,8 +22,6 @@ final class LaravelInertiaTableServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->singleton(Table::class, function () {
-            return new Table;
-        });
+        $this->app->singleton(Table::class, fn (): \Hristijans\LaravelInertiaTable\Table => new Table);
     }
 }

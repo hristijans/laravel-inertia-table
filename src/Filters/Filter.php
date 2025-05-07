@@ -20,11 +20,11 @@ abstract class Filter
 
     public static function make(string $name): static
     {
-        $instance = new static;
-        $instance->name = $name;
-        $instance->label = Str::headline($name);
+        $static = new static;
+        $static->name = $name;
+        $static->label = Str::headline($name);
 
-        return $instance;
+        return $static;
     }
 
     public function label(string $label): static
@@ -48,13 +48,13 @@ abstract class Filter
         return $this;
     }
 
-    public function apply(Builder $query, $value): Builder
+    public function apply(Builder $builder, $value): Builder
     {
-        if ($this->query) {
-            return call_user_func($this->query, $query, $value);
+        if ($this->query instanceof \Closure) {
+            return call_user_func($this->query, $builder, $value);
         }
 
-        return $query->where($this->name, $value);
+        return $builder->where($this->name, $value);
     }
 
     public function getName(): string

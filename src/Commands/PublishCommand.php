@@ -16,21 +16,21 @@ final class PublishCommand extends Command
     {
         $this->comment('Publishing configuration...');
         $this->callSilent('vendor:publish', [
-            '--provider' => 'Hristijans\\LaravelInertiaTable\\LaravelInertiaTableServiceProvider',
+            '--provider' => \Hristijans\LaravelInertiaTable\LaravelInertiaTableServiceProvider::class,
             '--tag' => 'laravel-inertia-table-config',
             '--force' => $this->option('force'),
         ]);
 
         $this->comment('Publishing assets...');
         $this->callSilent('vendor:publish', [
-            '--provider' => 'Hristijans\\LaravelInertiaTable\\LaravelInertiaTableServiceProvider',
+            '--provider' => \Hristijans\LaravelInertiaTable\LaravelInertiaTableServiceProvider::class,
             '--tag' => 'laravel-inertia-table-assets',
             '--force' => $this->option('force'),
         ]);
 
         $this->comment('Publishing migrations...');
         $this->callSilent('vendor:publish', [
-            '--provider' => 'Hristijans\\LaravelInertiaTable\\LaravelInertiaTableServiceProvider',
+            '--provider' => \Hristijans\LaravelInertiaTable\LaravelInertiaTableServiceProvider::class,
             '--tag' => 'laravel-inertia-table-migrations',
             '--force' => $this->option('force'),
         ]);

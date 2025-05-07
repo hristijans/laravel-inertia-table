@@ -23,11 +23,11 @@ abstract class Action
 
     public static function make(string $name): static
     {
-        $instance = new static;
-        $instance->name = $name;
-        $instance->label = Str::headline($name);
+        $static = new static;
+        $static->name = $name;
+        $static->label = Str::headline($name);
 
-        return $instance;
+        return $static;
     }
 
     public function label(string $label): static

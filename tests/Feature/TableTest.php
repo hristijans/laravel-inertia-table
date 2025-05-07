@@ -65,8 +65,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_can_build_a_basic_table()
+    public function test_it_can_build_a_basic_table()
     {
         // Create a table
         $table = Table::make('users')
@@ -84,8 +83,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         $this->assertEquals(['name', 'email'], $table['searchable']);
     }
 
-    /** @test */
-    public function it_can_add_actions_to_table()
+    public function test_it_can_add_actions_to_table()
     {
         // Create a table with actions
         $table = Table::make('users')
@@ -108,8 +106,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         $this->assertTrue($table['actions'][1]['requiresConfirmation']);
     }
 
-    /** @test */
-    public function it_can_add_filters_to_table()
+    public function test_it_can_add_filters_to_table()
     {
         // Create a table with filters
         $table = Table::make('users')
@@ -136,8 +133,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         ], $table['filters'][0]['options']);
     }
 
-    /** @test */
-    public function it_can_apply_filters_to_query()
+    public function test_it_can_apply_filters_to_query()
     {
         // Set up request with filter
         $request = Request::create('/', 'GET', [
@@ -167,8 +163,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         $this->assertCount(2, $table['records']->items());
     }
 
-    /** @test */
-    public function it_can_apply_sorting_to_query()
+    public function test_it_can_apply_sorting_to_query()
     {
         // Set up request with sort
         $request = Request::create('/', 'GET', [
@@ -207,8 +202,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         $this->assertEquals('John Doe', $table['records']->items()[0]['name']);
     }
 
-    /** @test */
-    public function it_can_apply_search_to_query()
+    public function test_it_can_apply_search_to_query()
     {
         // Set up request with search
         $request = Request::create('/', 'GET', [
@@ -231,9 +225,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         $this->assertEquals('Jane Smith', $table['records']->items()[0]['name']);
     }
 
-    /** @test */
-    /** @test */
-    public function it_can_preserve_state()
+    public function test_it_can_preserve_state()
     {
         // Create a table without state preservation first
         $table = Table::make('users')
@@ -261,8 +253,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
         $this->assertTrue($table['preserveState']);
     }
 
-    /** @test */
-    public function it_can_paginate_results()
+    public function test_it_can_paginate_results()
     {
         // Add more test data
         $testUser = $this->getTestUserModel();
