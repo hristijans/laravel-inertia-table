@@ -1,0 +1,36 @@
+name: Rector
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  rector:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v2
+
+      - name: Run Rector
+        run: ./vendor/bin/rector process --dry-run
+
+      - name: Apply Rector changes
+        if: ${{ github.event_name == 'push' }}
+        run: ./vendor/bin/rector process
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply Rector changes
