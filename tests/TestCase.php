@@ -12,6 +12,9 @@ class TestCase extends Orchestra
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Configure session for testing
+        $this->app['config']->set('session.driver', 'array');
     }
 
     protected function getPackageProviders($app)

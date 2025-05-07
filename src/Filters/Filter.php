@@ -57,6 +57,11 @@ abstract class Filter
         return $query->where($this->name, $value);
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     abstract public function getType(): string;
 
     public function toArray(): array

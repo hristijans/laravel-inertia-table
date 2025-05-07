@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hristijans\LaravelInertiaTable\Actions;
 
-
 use Closure;
 use Illuminate\Support\Str;
 

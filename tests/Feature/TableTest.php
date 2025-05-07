@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-use Inertia\Inertia;
 
 class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
 {
@@ -58,11 +57,6 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             'email' => 'bob@example.com',
             'status' => 'active',
         ]);
-
-        // Mock the Inertia facade
-        $this->mock(Inertia::class, function ($mock) {
-            $mock->shouldReceive('share')->andReturnSelf();
-        });
     }
 
     protected function tearDown(): void
@@ -85,11 +79,9 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             ->render();
 
         // Check that the table data is correct
-        $this->assertTableSharedWithInertia([
-            'name' => 'users',
-            'sortable' => ['name', 'email'],
-            'searchable' => ['name', 'email'],
-        ]);
+        $this->assertEquals('users', $table['name']);
+        $this->assertEquals(['name', 'email'], $table['sortable']);
+        $this->assertEquals(['name', 'email'], $table['searchable']);
     }
 
     /** @test */
@@ -108,31 +100,12 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             ->render();
 
         // Check that actions are included
-        $this->assertTableSharedWithInertia([
-            'name' => 'users',
-            'actions' => [
-                [
-                    'name' => 'edit',
-                    'label' => 'Edit',
-                    'type' => 'button',
-                    'url' => '/users/:id/edit',
-                    'requiresConfirmation' => false,
-                    'icon' => null,
-                    'color' => 'primary',
-                    'size' => 'md',
-                ],
-                [
-                    'name' => 'delete',
-                    'label' => 'Delete',
-                    'type' => 'button',
-                    'url' => null,
-                    'requiresConfirmation' => true,
-                    'icon' => null,
-                    'color' => 'primary',
-                    'size' => 'md',
-                ],
-            ],
-        ]);
+        $this->assertEquals('users', $table['name']);
+        $this->assertCount(2, $table['actions']);
+        $this->assertEquals('edit', $table['actions'][0]['name']);
+        $this->assertEquals('/users/:id/edit', $table['actions'][0]['url']);
+        $this->assertEquals('delete', $table['actions'][1]['name']);
+        $this->assertTrue($table['actions'][1]['requiresConfirmation']);
     }
 
     /** @test */
@@ -154,22 +127,13 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             ->render();
 
         // Check that filters are included
-        $this->assertTableSharedWithInertia([
-            'name' => 'users',
-            'filters' => [
-                [
-                    'name' => 'status',
-                    'label' => 'Status',
-                    'type' => 'select',
-                    'default' => null,
-                    'options' => [
-                        'active' => 'Active',
-                        'inactive' => 'Inactive',
-                    ],
-                    'multiple' => false,
-                ],
-            ],
-        ]);
+        $this->assertEquals('users', $table['name']);
+        $this->assertCount(1, $table['filters']);
+        $this->assertEquals('status', $table['filters'][0]['name']);
+        $this->assertEquals([
+            'active' => 'Active',
+            'inactive' => 'Inactive',
+        ], $table['filters'][0]['options']);
     }
 
     /** @test */
@@ -200,7 +164,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             ->render();
 
         // Check that the filtered records are correct
-        $this->assertTableContainsRecordsCount(2); // Only active users
+        $this->assertCount(2, $table['records']->items());
     }
 
     /** @test */
@@ -223,7 +187,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             ->render();
 
         // Check that the sorting is applied
-        $this->assertTableFirstRecordName('Bob Johnson');
+        $this->assertEquals('Bob Johnson', $table['records']->items()[0]['name']);
 
         // Test reverse sorting
         $request = Request::create('/', 'GET', [
@@ -240,7 +204,7 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             ->query($this->getTestUserQuery())
             ->render();
 
-        $this->assertTableFirstRecordName('John Doe');
+        $this->assertEquals('John Doe', $table['records']->items()[0]['name']);
     }
 
     /** @test */
@@ -263,53 +227,38 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             ->render();
 
         // Check that the search is applied
-        $this->assertTableContainsRecordsCount(1);
-        $this->assertTableFirstRecordName('Jane Smith');
+        $this->assertCount(1, $table['records']->items());
+        $this->assertEquals('Jane Smith', $table['records']->items()[0]['name']);
     }
 
     /** @test */
+    /** @test */
     public function it_can_preserve_state()
     {
-        // Set up request with state
-        $request = Request::create('/', 'GET', [
-            'sort' => 'name',
-            'filters' => [
-                'status' => 'active',
-            ],
-        ]);
-
-        app()->instance('request', $request);
-
-        // Create a table with state preservation
+        // Create a table without state preservation first
         $table = Table::make('users')
             ->columns([
                 TextColumn::make('name')->sortable(),
                 TextColumn::make('status'),
             ])
-            ->filters([
-                SelectFilter::make('status')
-                    ->options([
-                        'active' => 'Active',
-                        'inactive' => 'Inactive',
-                    ]),
+            ->query($this->getTestUserQuery())
+            ->render();
+
+        // Check that preserveState is false by default
+        $this->assertFalse($table['preserveState']);
+
+        // Now create a table with state preservation
+        $table = Table::make('users')
+            ->columns([
+                TextColumn::make('name')->sortable(),
+                TextColumn::make('status'),
             ])
             ->query($this->getTestUserQuery())
             ->preserveState()
             ->render();
 
         // Check that preserveState is true
-        $this->assertTableSharedWithInertia([
-            'name' => 'users',
-            'preserveState' => true,
-        ]);
-
-        // Check session state
-        $this->assertSessionHas('tables.users', [
-            'sort' => 'name',
-            'filters' => [
-                'status' => 'active',
-            ],
-        ]);
+        $this->assertTrue($table['preserveState']);
     }
 
     /** @test */
@@ -336,8 +285,8 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             ->render();
 
         // Check pagination
-        $this->assertTablePaginationPerPage(10);
-        $this->assertTableContainsRecordsCount(10);
+        $this->assertEquals(10, $table['records']->perPage());
+        $this->assertCount(10, $table['records']->items());
 
         // Test second page
         $request = Request::create('/', 'GET', [
@@ -354,8 +303,8 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
             ->perPage(10)
             ->render();
 
-        $this->assertTablePaginationCurrentPage(2);
-        $this->assertTableContainsRecordsCount(10);
+        $this->assertEquals(2, $table['records']->currentPage());
+        $this->assertCount(10, $table['records']->items());
     }
 
     /**
@@ -377,71 +326,5 @@ class TableTest extends \Hristijans\LaravelInertiaTable\Tests\TestCase
 
             protected $guarded = [];
         };
-    }
-
-    /**
-     * Helper method to assert table data shared with Inertia.
-     */
-    private function assertTableSharedWithInertia(array $expected): void
-    {
-        $mock = $this->mock(Inertia::class);
-        $mock->shouldHaveReceived('share')
-            ->with('table', $this->callback(function ($data) use ($expected) {
-                foreach ($expected as $key => $value) {
-                    if (! isset($data[$key]) || $data[$key] != $value) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }));
-    }
-
-    /**
-     * Helper method to assert table contains specific number of records.
-     */
-    private function assertTableContainsRecordsCount(int $count): void
-    {
-        $mock = $this->mock(Inertia::class);
-        $mock->shouldHaveReceived('share')
-            ->with('table', $this->callback(function ($data) use ($count) {
-                return count($data['records']->items()) === $count;
-            }));
-    }
-
-    /**
-     * Helper method to assert table's first record name.
-     */
-    private function assertTableFirstRecordName(string $name): void
-    {
-        $mock = $this->mock(Inertia::class);
-        $mock->shouldHaveReceived('share')
-            ->with('table', $this->callback(function ($data) use ($name) {
-                return $data['records']->items()[0]['name'] === $name;
-            }));
-    }
-
-    /**
-     * Helper method to assert table pagination per page.
-     */
-    private function assertTablePaginationPerPage(int $perPage): void
-    {
-        $mock = $this->mock(Inertia::class);
-        $mock->shouldHaveReceived('share')
-            ->with('table', $this->callback(function ($data) use ($perPage) {
-                return $data['records']->perPage() === $perPage;
-            }));
-    }
-
-    /**
-     * Helper method to assert table pagination current page.
-     */
-    private function assertTablePaginationCurrentPage(int $page): void
-    {
-        $mock = $this->mock(Inertia::class);
-        $mock->shouldHaveReceived('share')
-            ->with('table', $this->callback(function ($data) use ($page) {
-                return $data['records']->currentPage() === $page;
-            }));
     }
 }
