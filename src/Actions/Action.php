@@ -21,13 +21,21 @@ abstract class Action
 
     protected bool $requiresConfirmation = false;
 
-    public static function make(string $name): static
+    /**
+     * Create a new action instance.
+     */
+    public function __construct(string $name)
     {
-        $static = new static;
-        $static->name = $name;
-        $static->label = Str::headline($name);
+        $this->name = $name;
+        $this->label = Str::headline($name);
+    }
 
-        return $static;
+    /**
+     * Create a new action instance.
+     */
+    public static function make(string $name): self
+    {
+        return app(static::class, ['name' => $name]);
     }
 
     public function label(string $label): static
