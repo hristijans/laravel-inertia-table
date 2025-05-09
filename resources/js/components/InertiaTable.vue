@@ -83,6 +83,7 @@ import TextColumn from './Columns/TextColumn.vue';
 import BadgeColumn from './Columns/BadgeColumn.vue';
 import ButtonAction from './Actions/ButtonAction.vue';
 import SelectFilter from './Filters/SelectFilter.vue';
+import DateColumn from "./Columns/DateColumn.vue";
 
 const props = defineProps({
     table: {
@@ -136,6 +137,7 @@ const getColumnComponent = (type) => {
     const components = {
         text: TextColumn,
         badge: BadgeColumn,
+        date: DateColumn
         // Add more column types here
     };
 

@@ -24,6 +24,9 @@ You can install the package via composer:
 ```bash
 composer require hristijans/laravel-inertia-table
 ```
+```
+php artisan inertia-table:install
+```
 
 You can publish the config file with:
 

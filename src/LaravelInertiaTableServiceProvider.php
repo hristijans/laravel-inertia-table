@@ -24,4 +24,12 @@ final class LaravelInertiaTableServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(Table::class, fn (): \Hristijans\LaravelInertiaTable\Table => new Table);
     }
+
+    public function packageBooted(): void
+    {
+        // Publish JS assets
+        $this->publishes([
+            __DIR__.'/../resources/js' => resource_path('js/vendor/laravel-inertia-table'),
+        ], 'laravel-inertia-table-assets');
+    }
 }

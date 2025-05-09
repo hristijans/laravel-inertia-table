@@ -24,6 +24,7 @@ return [
     'default_column_types' => [
         'text' => Hristijans\LaravelInertiaTable\Columns\TextColumn::class,
         'badge' => Hristijans\LaravelInertiaTable\Columns\BadgeColumn::class,
+        'date' => Hristijans\LaravelInertiaTable\Columns\DateColumn::class,
     ],
 
     'default_action_types' => [
