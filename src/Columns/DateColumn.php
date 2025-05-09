@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Hristijans\LaravelInertiaTable\Columns;
 
-use Carbon\Carbon;
-
 final class DateColumn extends Column
 {
     protected ?string $default = null;
 
     protected string $format = 'd/m/Y';
 
+    protected ?string $formatted = null;
+
+    protected ?string $timezone = null;
+
     public function default(string $value): self
     {
-        $this->default = Carbon::parse($value)->format($this->format);
+        $this->default = $value;
 
         return $this;
     }
@@ -22,6 +24,13 @@ final class DateColumn extends Column
     public function format(string $format): self
     {
         $this->format = $format;
+
+        return $this;
+    }
+
+    public function timezone(string $timezone): self
+    {
+        $this->timezone = $timezone;
 
         return $this;
     }
@@ -35,7 +44,7 @@ final class DateColumn extends Column
     {
         return array_merge(parent::toArray(), [
             'default' => $this->default,
-            'format' => $this->format
+            'format' => $this->format,
         ]);
     }
 }
